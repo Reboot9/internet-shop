@@ -58,7 +58,6 @@ class CartDetailView(DetailView):
         context = super().get_context_data()
 
         for item in self.get_object():
-            print(item['total_price'])
             item['update_quantity_form'] = CartAddProductForm(initial={
                 'quantity': item['quantity'],
                 'override': True,

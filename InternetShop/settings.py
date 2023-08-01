@@ -128,3 +128,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # key to save cart in user session
 CART_SESSION_ID = 'cart'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
