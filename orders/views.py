@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView
+from django.urls import reverse
 
 from cart.cart import Cart
 from .models import OrderItem
@@ -21,12 +22,15 @@ class OrderCreateView(CreateView):
         # clear cart after adding order items to order
         cart.clear()
 
-        # send email notification that order was successfully created
+        # start async task to send email
         order_created.delay(order.id)
-
-        return render(self.request,
-                      'orders/order/created.html',
-                      {'order': order})
+        # set request in session
+        self.request.session['order_id'] = order.id
+        # redirect to payment page
+        return redirect(reverse('payment:process'))
+        # return render(self.request,
+        #               'orders/order/created.html',
+        #               {'order': order})
 
     def form_invalid(self, form):
         cart = Cart(self.request)
