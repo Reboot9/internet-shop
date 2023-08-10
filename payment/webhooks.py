@@ -31,6 +31,9 @@ def stripe_webhook(request):
             order = get_object_or_404(Order, id=session.client_reference_id)
             # mark order as paid
             order.paid = True
+            # save payment id in order model
+            order.stripe_id = session.payment_intent
+
             order.save()
 
     return HttpResponse(status=200)
