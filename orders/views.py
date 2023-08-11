@@ -1,13 +1,17 @@
+import weasyprint
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import CreateView, DetailView
-from django.urls import reverse
-from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic import CreateView
 
 from cart.cart import Cart
-from .models import OrderItem, Order
 from .forms import OrderCreateForm
+from .models import OrderItem, Order
 from .tasks import order_created
 
 
@@ -40,8 +44,17 @@ class OrderCreateView(CreateView):
 
 
 @method_decorator(staff_member_required, name='dispatch')
-class AdminOrderDetailView(DetailView):
-    model = Order
-    template_name = 'admin/orders/order/detail.html'
-    context_object_name = 'order'
-    pk_url_kwarg = 'order_id'
+class AdminOrderPDFView(View):
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+        html = render_to_string('orders/order/pdf_template.html', {'order': order})
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'filename=order_{order.id}.pdf'
+
+        pdf = weasyprint.HTML(string=html).write_pdf(
+            stylesheets=[weasyprint.CSS(settings.STATIC_ROOT / 'css/pdf.css')]
+        )
+        response.write(pdf)
+
+        return response

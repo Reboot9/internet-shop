@@ -1,5 +1,6 @@
 import csv
 import datetime
+
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import reverse
@@ -10,9 +11,10 @@ from .models import Order, OrderItem
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    raw_id_fields = ['product']
-    fields = ['product', 'price', 'quantity', 'item_total']
-    readonly_fields = ['item_total']
+    raw_id_fields = ('product',)
+    fields = ('product', 'price', 'quantity', 'item_total',)
+    readonly_fields = ('item_total',)
+    list_display = ('product', 'price', 'quantity', 'item_total',)
     extra = 1
 
     def item_total(self, instance):
@@ -83,11 +85,16 @@ def export_to_csv(modeladmin, request, queryset):
     return response
 
 
+def order_pdf(obj):
+    url = reverse('orders:admin_order_pdf', args=[obj.id])
+    return mark_safe(f'<a href="{url}">PDF</a>')
+
+order_pdf.short_description = 'Invoice'
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'email', 'address', 'postal_code',
                     'city', 'paid', order_stripe_payment, 'created', 'updated',
-                    'total_cost']
+                    'total_cost', order_pdf]
 
     fields = ('first_name', 'last_name', 'email', 'address', 'postal_code',
               'city', 'paid', 'total_cost')
