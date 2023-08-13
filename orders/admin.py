@@ -94,12 +94,12 @@ order_pdf.short_description = 'Invoice'
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'email', 'address', 'postal_code',
                     'city', 'paid', order_stripe_payment, 'created', 'updated',
-                    'total_cost', order_pdf]
+                    'total_cost', 'coupon', 'discount', order_pdf]
 
     fields = ('first_name', 'last_name', 'email', 'address', 'postal_code',
-              'city', 'paid', 'total_cost')
+              'city', ('coupon', 'discount'), 'paid', 'total_cost', )
 
-    readonly_fields = ('created', 'updated', 'total_cost')
+    readonly_fields = ('created', 'updated', 'total_cost', 'coupon', 'discount',)
 
     list_filter = ['paid', 'created', 'updated']
     inlines = [OrderItemInline]

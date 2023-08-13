@@ -25,6 +25,7 @@ urlpatterns = [
     path('orders/', include('orders.urls', namespace='orders')),
     # path('/order/<int:order_id>/pdf', AdminOrderPDFView.as_view(), name='admin_order_pdf'),
     path('payment/', include('payment.urls', namespace='payment')),
+    path('coupons/', include('coupons.urls', namespace='coupons')),
     path('', include('shop.urls', namespace='shop')),
 ]
 
