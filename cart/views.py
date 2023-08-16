@@ -1,12 +1,13 @@
 from django.http import HttpResponseNotAllowed
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 from django.views.generic import DetailView
 
-from shop.models import Product
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
 from coupons.forms import CouponForm
+from shop.models import Product
+from shop.recommender import Recommender
 
 
 class CartAddView(View):
@@ -64,4 +65,13 @@ class CartDetailView(DetailView):
                 'override': True,
             })
         context['coupon_form'] = CouponForm()
+
+        # products recommendation
+        r = Recommender()
+        cart_products = [item['product'] for item in context['cart']]
+        recommended_products = []
+        if cart_products:
+            recommended_products = r.suggest_products_for(cart_products, 4)
+        context['recommended_products'] = recommended_products
+
         return context

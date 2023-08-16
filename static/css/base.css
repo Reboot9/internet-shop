@@ -307,7 +307,8 @@ ul.errorlist {
 }
 
 .recommendations img {
-    width:200px
+    width:200px;
+    height: 200px;
 }
 
 .recommendations p {
@@ -330,6 +331,7 @@ ul.errorlist {
 
 .recommendations.cart img {
     width:120px;
+    height: 120px;
 }
 
 /* braintree hosted fields */
