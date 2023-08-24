@@ -56,6 +56,13 @@ class CartDetailView(DetailView):
     def get_object(self, queryset=None):
         return Cart(self.request)
 
+    def get(self, request, *args, **kwargs):
+        cart = self.get_object()
+
+        if not cart:
+            return redirect('shop:product_list')
+
+        return super().get(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
 
